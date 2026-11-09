@@ -1,0 +1,248 @@
+<title>Bingo du Run</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@500;700;800&family=Barlow:wght@500;600&display=swap">
+<style>
+/* Layout: une piste d'athlé en fond, un dossard au centre qui porte les 5 objets, un gros bouton en dessous */
+:root{
+  --track:#C24A30;
+  --track-deep:#A23B24;
+  --lane:#F3E9DC;
+  --bib:#FBFAF6;
+  --ink:#17161A;
+  --muted:#6E6A66;
+  --blue:#1E4CC4;
+  --found:#1E8F4E;
+  --display:"Anton", Impact, "Arial Narrow", sans-serif;
+  --label:"Barlow Condensed", "Arial Narrow", sans-serif;
+  --body:"Barlow", system-ui, sans-serif;
+  color-scheme: light;
+}
+*{box-sizing:border-box}
+html,body{min-height:100%}
+body{
+  background:
+    repeating-linear-gradient(90deg, transparent 0 calc(25% - 3px), var(--lane) calc(25% - 3px) 25%),
+    var(--track);
+  background-color:var(--track);
+  color:var(--ink);
+  font-family:var(--body);
+  padding-left:max(16px, env(safe-area-inset-left, 0px));
+  padding-right:max(16px, env(safe-area-inset-right, 0px));
+  padding-block:28px 40px;
+}
+body::after{ /* grain du tartan */
+  content:"";position:fixed;inset:0;pointer-events:none;opacity:.18;
+  background-image:radial-gradient(rgba(0,0,0,.35) 1px, transparent 1.2px);
+  background-size:5px 5px;
+}
+.wrap{max-width:440px;margin:0 auto;display:flex;flex-direction:column;gap:22px;position:relative;z-index:1}
+
+.bib{
+  background:var(--bib);
+  border-radius:10px;
+  position:relative;
+  padding:18px 22px 20px;
+  box-shadow:0 2px 0 var(--track-deep), 0 18px 40px rgba(60,10,0,.35);
+  transform:rotate(-1.2deg);
+}
+.pin{position:absolute;width:13px;height:13px;border-radius:50%;
+  background:radial-gradient(circle at 35% 35%, #fff 0 20%, #b9b4ad 45%, #6c6863 100%);
+  box-shadow:inset 0 0 0 2px var(--bib), 0 0 0 1.5px #8b867f}
+.pin.tl{top:10px;left:10px}.pin.tr{top:10px;right:10px}
+.pin.bl{bottom:10px;left:10px}.pin.br{bottom:10px;right:10px}
+
+.band{
+  display:flex;justify-content:space-between;align-items:baseline;gap:8px;
+  font-family:var(--label);font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+  font-size:.82rem;color:var(--blue);padding-inline:12px;
+}
+h1{
+  font-family:var(--display);font-weight:400;
+  font-size:clamp(2.6rem, 13vw, 3.6rem);line-height:.95;
+  margin:8px 0 0;text-align:center;letter-spacing:.01em;text-transform:uppercase;
+  text-wrap:balance;
+}
+h1 span{color:var(--blue)}
+.num{
+  font-family:var(--display);font-size:clamp(3.4rem, 18vw, 5rem);line-height:1;
+  text-align:center;color:var(--ink);margin:6px 0 2px;
+  font-variant-numeric:tabular-nums;letter-spacing:.04em;
+}
+.sub{text-align:center;font-family:var(--label);font-weight:500;color:var(--muted);
+  font-size:.95rem;letter-spacing:.04em;margin:0 0 14px}
+
+.list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.item{
+  display:grid;grid-template-columns:34px 1fr 28px;align-items:center;gap:10px;
+  min-height:52px;padding:8px 12px;border-radius:8px;
+  border:2px dashed #d9d2c8;background:transparent;width:100%;
+  font:inherit;color:inherit;text-align:left;cursor:pointer;
+  transition:background .2s, border-color .2s, transform .15s;
+}
+.item:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.item.filled{border-style:solid;border-color:var(--ink);background:#fff}
+.item .idx{font-family:var(--display);font-size:1.5rem;color:var(--blue);text-align:center;font-variant-numeric:tabular-nums}
+.item .txt{font-family:var(--label);font-weight:700;font-size:1.25rem;line-height:1.1;text-transform:uppercase;letter-spacing:.01em;min-width:0;overflow-wrap:anywhere}
+.item.empty .txt{color:#b8b0a6}
+.item .box{width:26px;height:26px;border:2.5px solid var(--ink);border-radius:50%;display:grid;place-items:center}
+.item.empty .box{border-color:#d9d2c8}
+.item.found{background:#E7F4EC;border-color:var(--found)}
+.item.found .txt{text-decoration:line-through;text-decoration-thickness:3px;text-decoration-color:var(--found)}
+.item.found .box{background:var(--found);border-color:var(--found)}
+.item.found .box::after{content:"";width:9px;height:14px;border:solid #fff;border-width:0 3px 3px 0;transform:translateY(-2px) rotate(45deg)}
+.item.spin .txt{color:var(--muted)}
+.item.pop{animation:pop .35s ease-out both}
+@keyframes pop{0%{transform:scale(.92)}60%{transform:scale(1.04)}100%{transform:scale(1)}}
+
+.foot{display:flex;justify-content:space-between;margin-top:14px;padding-inline:12px;
+  font-family:var(--label);font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-size:.8rem;color:var(--muted)}
+.foot b{color:var(--ink);font-variant-numeric:tabular-nums}
+
+.go{
+  appearance:none;border:0;cursor:pointer;
+  font-family:var(--display);font-size:clamp(1.7rem, 8vw, 2.2rem);letter-spacing:.04em;text-transform:uppercase;
+  background:var(--ink);color:var(--bib);
+  padding:20px 16px;border-radius:999px;width:100%;
+  box-shadow:0 7px 0 #000, 0 14px 26px rgba(0,0,0,.35);
+  transition:transform .08s, box-shadow .08s;
+}
+.go:active{transform:translateY(6px);box-shadow:0 1px 0 #000, 0 6px 14px rgba(0,0,0,.3)}
+.go:focus-visible{outline:4px solid var(--bib);outline-offset:4px}
+.go:disabled{opacity:.85;cursor:wait}
+.hint{color:var(--lane);text-align:center;font-family:var(--label);font-weight:500;font-size:1rem;letter-spacing:.03em;margin:-6px 0 0}
+
+.credit{color:var(--lane);text-align:center;font-family:var(--label);font-weight:500;font-size:.95rem;letter-spacing:.03em;margin:0;opacity:.9}
+.credit b{font-family:var(--display);font-weight:400;letter-spacing:.06em;font-size:1.1rem;color:var(--bib)}
+.bingo{
+  position:fixed;inset:0;display:grid;place-items:center;pointer-events:none;z-index:5;
+}
+.bingo span{
+  font-family:var(--display);font-size:clamp(4rem, 26vw, 9rem);color:var(--bib);
+  text-shadow:0 6px 0 var(--blue), 0 12px 30px rgba(0,0,0,.4);
+  transform:rotate(-8deg);animation:stamp .5s cubic-bezier(.2,1.6,.4,1) both;
+}
+@keyframes stamp{from{transform:rotate(-8deg) scale(2.4);opacity:0}to{transform:rotate(-8deg) scale(1);opacity:1}}
+
+@media (prefers-reduced-motion: reduce){
+  .item.pop,.bingo span{animation:none}
+}
+</style>
+
+<div class="wrap">
+  <article class="bib" aria-labelledby="t">
+    <i class="pin tl"></i><i class="pin tr"></i><i class="pin bl"></i><i class="pin br"></i>
+    <div class="band"><span>OSKOUR</span><span id="date"></span></div>
+    <h1 id="t">Bingo <span>du run</span></h1>
+    <div class="num" id="num">000</div>
+    <p class="sub">5 objets à trouver avant la fin du run</p>
+    <ol class="list" id="list"></ol>
+    <div class="foot"><span>Trouvés <b id="score">0/5</b></span><span><b id="count">0</b> objets possibles</span></div>
+  </article>
+
+  <button class="go" id="go" type="button">Tirer 5 objets</button>
+  <p class="hint">Pendant le run, touche un objet pour le cocher.</p>
+  <p class="credit">Un défi lancé par <b>OSKOUR</b> sur TikTok. Fais ton bingo et montre-le en vidéo.</p>
+</div>
+<div class="bingo" id="bingo" hidden><span>BINGO!</span></div>
+
+<script>
+const RAW = `un chêne|un saule pleureur|un bouleau|un sapin|un palmier|un arbre en fleurs|un tas de feuilles mortes|une feuille rouge|une pomme de pin|un gland|une châtaigne|un champignon|un pissenlit|une marguerite|un coquelicot|une rose|un tournesol|une haie taillée en forme|des ronces|du lierre sur un mur|de la mousse sur un toit|un tronc coupé|une souche|un arbre mort|une branche cassée sur le chemin|une flaque d'eau|un reflet dans une flaque|un ruisseau|une rivière|un étang|une fontaine|un canal|une écluse|un pont en pierre|un champ de blé|un champ de maïs|un champ labouré|une botte de foin|un tas de bois|un potager|un épouvantail|une serre|un pommier|une vigne|un nid dans un arbre|une toile d'araignée|un arc-en-ciel|un nuage en forme d'animal|la lune en plein jour|un avion dans le ciel|une traînée d'avion|du brouillard|de la boue|une colline|un terril|une forêt|un sentier en forêt|un arbre avec un cœur gravé|un arbre plus large que toi|des racines qui sortent du sol|du houx|du gui dans un arbre|une citrouille|une courge|un tas de compost|un rocher|un caillou en forme de cœur|un bâton parfait|une plume par terre|un chien|un chien qui aboie|un chat noir|un chat roux|un chat tigré|un chat à la fenêtre|un chat qui traverse|un pigeon|un corbeau|une pie|un merle|un moineau|une mouette|un canard|un cygne|une oie|une poule|un coq|une vache|un cheval|un poney|un âne|un mouton|une chèvre|un cochon|un lapin|un écureuil|un hérisson|une limace|un escargot|une fourmi|une coccinelle|un papillon|une abeille|un chien en laisse|un chien avec un manteau|deux chiens qui jouent|un chien qui court|un petit chien dans un sac|un berger allemand|un caniche|un labrador|un héron|un poisson dans l'eau|un nid d'oiseau|une ruche|une grenouille|un ver de terre|un faisan|un lièvre|un chevreuil|une crotte de chien|un chien qui veut courir avec toi|un oiseau sur un fil électrique|une nuée d'oiseaux|une vache couchée|un autre coureur|un coureur en t-shirt fluo|un coureur avec un chien|un coureur qui te salue|un cycliste|un groupe de cyclistes|un cycliste en tenue complète|quelqu'un qui promène son chien|une poussette|un enfant à vélo|quelqu'un en trottinette|quelqu'un en rollers|un skateur|un facteur|un livreur à vélo|un jardinier|quelqu'un qui tond sa pelouse|quelqu'un qui lave sa voiture|un pêcheur|un couple main dans la main|quelqu'un en costume|quelqu'un avec un parapluie|quelqu'un avec un bonnet|une casquette à l'envers|quelqu'un qui fait du sport dehors|un groupe de marcheurs|des bâtons de marche nordique|quelqu'un qui te dit bonjour|quelqu'un au téléphone|quelqu'un qui mange en marchant|un ouvrier en gilet orange|un policier|un pompier|un tracteur conduit par un agriculteur|un cavalier|une personne âgée sur un banc|des enfants qui jouent au foot|quelqu'un qui fait des tractions|quelqu'un qui court plus vite que toi|quelqu'un en pyjama|quelqu'un avec un casque audio|un groupe d'ados|quelqu'un qui prend une photo|un musicien de rue|quelqu'un avec un bouquet de fleurs|un serveur en terrasse|quelqu'un avec une baguette de pain|quelqu'un avec des sacs de courses|quelqu'un qui fait son jogging en jean|quelqu'un en short alors qu'il fait froid|quelqu'un en tongs|quelqu'un habillé tout en noir|quelqu'un habillé de la même couleur que toi|quelqu'un avec des baskets rouges|un sac à dos jaune|une doudoune|un manteau long|un maillot de foot|un t-shirt avec un message|un chapeau rigolo|des lunettes de soleil|quelqu'un avec une valise|un bébé|des jumeaux|un enfant sur les épaules|quelqu'un qui fait du vélo sans les mains|quelqu'un qui bricole|quelqu'un qui étend son linge|quelqu'un à sa fenêtre|quelqu'un qui attend le bus|une voiture rouge|une voiture jaune|une voiture verte|une voiture rose|une voiture violette|une voiture orange|une voiture marron|une voiture bleu clair|une voiture blanche toute propre|une voiture décapotable|une voiture de sport|une 2CV|une Twingo|une Fiat 500|une Mini|une Tesla|une voiture électrique en charge|une Coccinelle|une vieille voiture de collection|un taxi|une ambulance|un camion de pompiers|une voiture de police|un camion poubelle|une benne|un bus|un car scolaire|un tramway|un train|un camion de livraison|un camping-car|une caravane|un tracteur|une moissonneuse|un quad|une moto|un scooter|un vélo cargo|un tandem|un vélo d'enfant|un vélo abandonné|un vélo en libre-service|une trottinette électrique garée|une voiture avec des autocollants|une voiture couverte de poussière|une voiture sous une bâche|une plaque d'immatriculation étrangère|une plaque belge|une plaque qui finit par 59|une plaque avec trois chiffres identiques|une voiture d'auto-école|une dépanneuse|une bétonnière|une grue|une pelleteuse|un rouleau compresseur|une camionnette de plombier|un food truck|un camion frigorifique|une voiture mal garée|une voiture avec un vélo sur le toit|une remorque|un bateau|une péniche|un kayak|une montgolfière|un hélicoptère|un drone|un chariot de supermarché abandonné|une voiture qui klaxonne|un feu rouge|un feu orange|un passage piéton|un rond-point|un panneau stop|un panneau sens interdit|un panneau 30|un panneau 50|un panneau 70|un panneau 90|un panneau impasse|un panneau de sortie de ville|un panneau attention enfants|un panneau attention animaux|un panneau de travaux|un cône de chantier|une barrière de chantier|une boîte aux lettres jaune|une cabine téléphonique|une bouche d'incendie|une plaque d'égout|un lampadaire allumé|un banc public|une poubelle publique|un container à verre|une borne de recharge|un distributeur de billets|un arrêt de bus|un abribus|une gare|une église|un clocher|une mairie|une école|une boulangerie|une croix verte de pharmacie|un bureau de tabac|un fleuriste|un kebab|une pizzeria|une friterie|un supermarché|une station-service|un garage|une laverie|un coiffeur|une banque|une boucherie|une boutique fermée|un cimetière|un monument aux morts|une statue|un drapeau français|un drapeau européen|un drapeau d'un autre pays|un graffiti|un tag|une fresque murale|une affiche déchirée|un sticker sur un poteau|une affiche de concert|un panneau à vendre|un panneau à louer|une boîte à livres|un parc|une aire de jeux|un toboggan|une balançoire|un terrain de foot|un panier de basket|un city stade|un skatepark|une piscine|un stade|un parking|un parking vide|un pont|un tunnel|un escalier|une passerelle|un viaduc|un passage à niveau|une voie ferrée|un château d'eau|une éolienne|une antenne relais|un pylône électrique|une maison en briques rouges|des volets bleus|une porte rouge|une porte jaune|une porte verte|une porte bleue|un portail en fer forgé|un numéro de maison 13|le numéro 7|le numéro 42|un numéro de maison à trois chiffres|une boîte aux lettres originale|un nain de jardin|un flamant rose en plastique|un trampoline dans un jardin|une piscine gonflable|un barbecue|un hamac|une niche|un panneau attention chien|une cheminée qui fume|une parabole|des panneaux solaires|une fenêtre ouverte|une maison abandonnée|une ruine|un moulin|un château|une ferme|une grange|un silo|un estaminet|un café en terrasse|une horloge publique|un thermomètre de pharmacie|un panneau qui indique Paris|un panneau qui indique la Belgique|une borne kilométrique|un balisage de rando rouge et blanc|un panneau de piste cyclable|un plan de la ville|une caméra de surveillance|un radar|un miroir de rue|un compteur électrique|une boîte à clés|une bouche de métro|un escalier en colimaçon|un balcon fleuri|une véranda|une serre de jardin|une cabane dans un arbre|un abri de jardin|une clôture en bois|un mur en pierre|une haie de thuyas|un banc en bois|un ralentisseur|un trou dans la route|un pavé déchaussé|une route pavée|un chemin de terre|un chemin de halage|une piste cyclable|un sens unique|une rue en pente|un tunnel sous une route|une chaussette perdue|un gant perdu|une chaussure seule|une canette|une bouteille en plastique|un masque par terre|un ballon de foot|une balle de tennis|un frisbee|une trottinette d'enfant|un jouet oublié|une tétine|une pièce de monnaie|un ticket de caisse|un parapluie cassé|un matelas sur le trottoir|un canapé sur le trottoir|une télé abandonnée|une palette en bois|un pneu|un sac de courses|un cadenas sur un pont|une clé perdue|un vélo sans roue|une marelle à la craie|un dessin à la craie|un message écrit par terre|une flèche peinte au sol|une trace de pneu|des empreintes dans la boue|une boîte de pizza|un journal|une affiche chat perdu|un ballon de baudruche|des guirlandes|une décoration de Noël|un sapin de Noël décoré|un Père Noël sur un balcon|des lumières de Noël|une couronne sur une porte|une décoration d'Halloween|un drapeau de club de foot|un vélo décoré|des fleurs en pot sur un rebord|un cœur dessiné quelque part|un smiley dessiné|un mot en anglais sur une enseigne|un jeu de mots sur une devanture|un prénom sur une enseigne|une enseigne au néon|une enseigne avec une faute|une vitrine décorée|un mannequin en vitrine|un distributeur de baguettes|un distributeur de pizzas|un marché|un vide-grenier|une brocante|une fête foraine|un manège|une affiche de cirque|un chantier|une maison en construction|un échafaudage|une échelle|une brouette|un tuyau d'arrosage|un arroseur automatique|une tondeuse|un taille-haie|une souffleuse à feuilles|un tas de sable|un tas de gravier|un sac de ciment|un seau|un panneau rouillé|une boîte aux lettres débordante|une porte de garage ouverte|un vélo accroché à une grille|un antivol sans vélo|une poubelle renversée|des poubelles sorties|un bac de tri jaune|un bac à verre|un composteur|un récupérateur d'eau de pluie|une girouette|un coq sur un clocher|un cadran solaire|une cloche|un lavoir|un puits|un calvaire|une croix au bord de la route|une chapelle|un banc avec une plaque|un arbre avec une plaque|un parcours de santé|une barre de traction|un vestiaire|une piste d'athlétisme|des buts de foot|un filet de tennis|un terrain de pétanque|des joueurs de pétanque|une table de ping-pong|un jeu pour enfants à ressort|un bac à sable|un carrousel|un kiosque à musique|une fontaine à eau potable|un robinet public|des toilettes publiques|un banc pour deux|une table de pique-nique|un barbecue public|un panneau interdit aux chiens|un panneau propriété privée|un panneau chasse gardée|un panneau zone 30|un panneau rue piétonne|un panneau voie sans issue|un panneau parking payant|un horodateur|une place handicapée|un panneau électoral|une affiche électorale|un panneau lumineux|un panneau d'info mairie|une borne d'incendie rouge|une bouche à clé|un poteau électrique en bois|un transformateur électrique|un câble qui pend|des oiseaux sur un toit|une antenne râteau|une cheminée en briques|un toit en tuiles rouges|un toit en ardoise|une lucarne|un vitrail|une gargouille|une porte d'église ouverte|un mariage|une sortie d'école|un bus scolaire jaune|un camion de déménagement|un carton de déménagement|un camion de glaces|un livreur de colis|un colis devant une porte|une boîte aux lettres ouverte|un journal dans une boîte aux lettres|entendre une cloche d'église|entendre un coq|entendre une sirène|entendre un klaxon|entendre un oiseau chanter|entendre de la musique d'une fenêtre|entendre un chien aboyer|entendre un train|entendre une tondeuse|entendre des enfants rire|sentir une odeur de pain|sentir une odeur de frites|sentir une odeur de feu de bois|sentir une odeur de fleurs|un panneau avec ton prénom|quelque chose de rose fluo|quelque chose de violet|quelque chose de doré|quelque chose en forme d'étoile|quelque chose en forme de triangle|quelque chose de complètement cassé|quelque chose de plus vieux que toi|quelque chose qui brille|quelque chose qui tourne|quelque chose avec des pois|quelque chose avec des rayures|un objet perdu sur un poteau|une écharpe accrochée à une grille|un doudou perdu|une boule de Noël|une bougie à une fenêtre|un chat sur une voiture|un chien sur un balcon|un perroquet|un poulailler|un enclos|un étang avec des canards|un pont au-dessus de l'eau|une barque|un ponton|une bouée|une ligne de pêche|une canne à pêche|une tente|un panneau de camping|un gîte|une chambre d'hôtes|un hôtel|un restaurant|une crêperie|un salon de thé|un bar|une cave à vin|un caviste|une épicerie|une supérette|un marchand de journaux|un photomaton|une cabine de photos|une pharmacie de garde|un cabinet médical|un vétérinaire|une auto-école|une agence immobilière|une salle de sport|un dojo|une salle des fêtes|une médiathèque|un musée|un cinéma|un théâtre|une affiche de film|un bureau de poste|une caserne de pompiers|un commissariat|une gendarmerie|un collège|un lycée|une crèche|une maison de retraite|un hôpital|une usine|une cheminée d'usine|un entrepôt|un hangar|une zone industrielle|une déchetterie|un garage auto|un lavage auto|une station de lavage|un pressing|un cordonnier|un serrurier|un tatoueur|un barbier|un magasin de vélos|un magasin de sport|une animalerie|une jardinerie|un magasin de jouets|une librairie|un opticien|un bijoutier|un vendeur de fleurs|un chocolatier|une pâtisserie|une fromagerie|une poissonnerie|un primeur|une cagette de légumes|des fruits en vitrine|une enseigne en forme d'objet|une enseigne qui clignote|une vitrine vide|un local à louer|un rideau de fer tagué|une boîte à dons|une boîte à graines|une boîte à jouets|un frigo solidaire`;
+const ITEMS = [...new Set(RAW.split("|").map(s => s.trim()).filter(Boolean))];
+
+const $ = id => document.getElementById(id);
+const list = $("list"), go = $("go"), num = $("num"), score = $("score"), bingo = $("bingo");
+$("count").textContent = ITEMS.length;
+$("date").textContent = new Date().toLocaleDateString("fr-FR", {day:"2-digit", month:"2-digit", year:"numeric"});
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+let state = {picks: [], found: [], bib: null};
+try { const s = JSON.parse(localStorage.getItem("bingo-run")); if (s && s.picks && s.picks.length === 5) state = s; } catch(e) {}
+const save = () => { try { localStorage.setItem("bingo-run", JSON.stringify(state)); } catch(e) {} };
+
+function pick5(){
+  const pool = ITEMS.slice(), out = [];
+  for (let i = 0; i < 5; i++) out.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
+  return out;
+}
+const rnd = () => ITEMS[Math.floor(Math.random() * ITEMS.length)];
+const bibNum = () => String(Math.floor(Math.random() * 999) + 1).padStart(3, "0");
+
+function render(){
+  list.innerHTML = "";
+  for (let i = 0; i < 5; i++){
+    const li = document.createElement("li");
+    const b = document.createElement("button");
+    b.type = "button"; b.id = "item-" + i;
+    const has = !!state.picks[i];
+    b.className = "item " + (has ? "filled" : "empty") + (state.found[i] ? " found" : "");
+    b.innerHTML = `<span class="idx">${i+1}</span><span class="txt"></span><span class="box"></span>`;
+    b.querySelector(".txt").textContent = has ? state.picks[i] : "? ? ?";
+    b.setAttribute("aria-pressed", state.found[i] ? "true" : "false");
+    b.disabled = !has;
+    b.addEventListener("click", () => toggle(i));
+    li.appendChild(b); list.appendChild(li);
+  }
+  num.textContent = state.bib || "000";
+  updateScore();
+}
+function updateScore(){
+  const n = state.found.filter(Boolean).length;
+  score.textContent = n + "/5";
+  return n;
+}
+function toggle(i){
+  if (!state.picks[i]) return;
+  state.found[i] = !state.found[i];
+  const b = $("item-" + i);
+  b.classList.toggle("found", state.found[i]);
+  b.setAttribute("aria-pressed", state.found[i] ? "true" : "false");
+  save();
+  if (updateScore() === 5 && state.found[i]) showBingo();
+}
+function showBingo(){
+  bingo.hidden = false;
+  setTimeout(() => { bingo.hidden = true; }, 2200);
+}
+
+function draw(){
+  const final = pick5(), finalBib = bibNum();
+  state = {picks: [], found: [false,false,false,false,false], bib: null};
+  go.disabled = true;
+  render();
+  const btns = [...list.querySelectorAll(".item")];
+  btns.forEach(b => { b.classList.remove("empty"); b.classList.add("filled","spin"); });
+  if (reduce){
+    state = {picks: final, found: [false,false,false,false,false], bib: finalBib};
+    save(); render(); go.disabled = false; return;
+  }
+  const start = performance.now();
+  const stopAt = [700, 950, 1200, 1450, 1700];
+  let done = 0;
+  (function tick(now){
+    const t = now - start;
+    num.textContent = t < 1700 ? bibNum() : finalBib;
+    btns.forEach((b, i) => {
+      if (b.dataset.locked) return;
+      if (t >= stopAt[i]){
+        b.dataset.locked = "1";
+        b.classList.remove("spin"); b.classList.add("pop");
+        b.querySelector(".txt").textContent = final[i];
+        done++;
+      } else {
+        b.querySelector(".txt").textContent = rnd();
+      }
+    });
+    if (done < 5) requestAnimationFrame(tick);
+    else {
+      state = {picks: final, found: [false,false,false,false,false], bib: finalBib};
+      save(); render(); go.disabled = false;
+      go.textContent = "Relancer";
+    }
+  })(start);
+}
+
+go.addEventListener("click", draw);
+render();
+if (state.picks.length === 5) go.textContent = "Relancer";
+</script>
