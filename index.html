@@ -119,6 +119,9 @@ h1 span{color:var(--blue)}
 .go:disabled{opacity:.85;cursor:wait}
 .hint{color:var(--lane);text-align:center;font-family:var(--label);font-weight:500;font-size:1rem;letter-spacing:.03em;margin:-6px 0 0}
 
+.reset{appearance:none;cursor:pointer;align-self:center;background:transparent;color:var(--bib);border:2px solid var(--lane);border-radius:999px;padding:10px 20px;font-family:var(--label);font-weight:700;font-size:1rem;letter-spacing:.06em;text-transform:uppercase;margin-top:-6px}
+.reset:hover{background:rgba(255,255,255,.12)}
+.reset:focus-visible{outline:3px solid var(--bib);outline-offset:3px}
 .credit{color:var(--lane);text-align:center;font-family:var(--label);font-weight:500;font-size:.95rem;letter-spacing:.03em;margin:0;opacity:.9}
 .credit b{font-family:var(--display);font-weight:400;letter-spacing:.06em;font-size:1.1rem;color:var(--bib)}
 .bingo{
@@ -150,6 +153,7 @@ h1 span{color:var(--blue)}
   </article>
 
   <button class="go" id="go" type="button">Tirer 5 objets</button>
+  <button class="reset" id="reset" type="button" hidden>Recommencer à zéro</button>
   <p class="hint">Pendant le run, touche un objet pour le cocher.</p>
   <p class="credit">Un défi lancé par <b>OSKOUR</b> sur TikTok. Fais ton bingo et montre-le en vidéo.</p>
 </div>
@@ -211,6 +215,7 @@ function render(){
     li.appendChild(b); list.appendChild(li);
   }
   num.textContent = state.bib || "000";
+  $("reset").hidden = state.picks.length !== 5;
   updateScore();
 }
 function updateScore(){
@@ -271,6 +276,14 @@ function draw(){
 }
 
 go.addEventListener("click", draw);
+$("reset").addEventListener("click", () => {
+  state = {picks: [], found: [], bib: null};
+  try { localStorage.removeItem("bingo-run"); } catch(e) {}
+  bingo.hidden = true;
+  go.textContent = "Tirer 5 objets";
+  render();
+  window.scrollTo(0, 0);
+});
 render();
 if (state.picks.length === 5) go.textContent = "Relancer";
 </script>
