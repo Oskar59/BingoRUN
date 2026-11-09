@@ -1,3 +1,9 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#C24A30">
 <title>Bingo du Run</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,6 +25,7 @@
   color-scheme: light;
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 html,body{min-height:100%}
 body{
   background:
@@ -128,6 +135,8 @@ h1 span{color:var(--blue)}
   .item.pop,.bingo span{animation:none}
 }
 </style>
+</head>
+<body>
 
 <div class="wrap">
   <article class="bib" aria-labelledby="t">
@@ -202,7 +211,8 @@ function toggle(i){
 }
 function showBingo(){
   bingo.hidden = false;
-  setTimeout(() => { bingo.hidden = true; }, 2200);
+  clearTimeout(showBingo.t);
+  showBingo.t = setTimeout(() => { bingo.hidden = true; }, 2500);
 }
 
 function draw(){
@@ -246,3 +256,5 @@ go.addEventListener("click", draw);
 render();
 if (state.picks.length === 5) go.textContent = "Relancer";
 </script>
+</body>
+</html>
